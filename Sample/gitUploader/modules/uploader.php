@@ -1,0 +1,44 @@
+<?
+$define=$GLOBALS['define'];
+$use=$GLOBALS['use'];
+
+$define("upload",array("config"),function($require,$exports,$module){
+	$ajax=$require("/fsock");
+	$conf=$require("/config");
+	$getInput=$require("/getInput");
+	$o=$conf["get"]();
+	$owner=$o[0];
+	$cookie=$o[1];
+
+	$exports->uploadFile=function($storeName,$fileName,$localSrc)
+	use($ajax,$getInput,$owner,$cookie){
+		$q='/'.$owner.'/'.$storeName;
+  	$u=array(
+  		 array($q.'/new/master',
+  			$q.'/create/master',
+  			'action="/clhh/fd/create/master"'
+  		 ),
+  		 array($q.'/edit/master/'.$fileName,
+  			$q.'/tree-save/master/'.$fileName,
+  			'action="'.$q.'/tree-save/master/'.$fileName.'"'
+  		 )
+  	);
+  	for($i=0;$i<2;$i++){
+  		$a=$ajax[0]('GET',$u[$i][0],$cookie);
+	  	$a=$a['body'];
+	  	$r=$ajax[0]('POST',$u[$i][1],
+				$cookie,
+			  array(
+			  	"authenticity_token"=>$getInput[0]($a,"authenticity_token",$u[$i][2]),
+			  	"filename"=>preg_replace('/^.*?([^\/]+$)/','$1',$fileName),
+			  	"new_filename"=>$fileName,
+			  	"commit"=>$getInput[0]($a,'commit'),
+			  	"content_changed"=>"true",
+			  	"value"=>file_get_contents($localSrc)
+			  	)
+			);
+			if(preg_match('/(^|\s)\<html\>\<body\>You\sare\sbeing/',$r['body']))break;
+  	}
+  };
+
+});
