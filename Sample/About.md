@@ -21,3 +21,4 @@ But before debug it, you should change some configs in these files:
 ----------------------------------------------
 
 Now you can use this <b>Uploader</b> on your localhost, you can also extand its functions. I am sure that the Uploader is more esaily use than Git client..
+
