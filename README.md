@@ -10,4 +10,4 @@ The PMD api is similar to the AMD apis,a few differences are their running envir
 <a href=https://github.com/amdjs/amdjs-api/wiki/AMD>See AMD apis</a>
 
 <h3>Notice:</h3>
-"php environment version" >= <b>"php 5.3"</b> || "PMD not works"
+"php environment version" >= <b>"php 5.4n"</b> || "PMD not works"
