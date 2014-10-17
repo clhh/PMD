@@ -1,0 +1,30 @@
+<?
+$define=$GLOBALS['define'];
+$use=$GLOBALS['use'];
+
+$define("login",array("fsock"),function($require,$exports,$module){
+	$ajax=$require("/fsock");
+	$getInput=$require("/getInput");
+	$exports->login=function($user,$pwd)use($ajax,$getInput){
+		$f=fopen(md5($user).".txt","a+");
+		if(($co=fread($f,400))&&strlen($co)>30){
+			$co=explode("\n",$co);
+			$owner=$co[0];
+			$user_session=$co[1];
+		}else{
+			$f=fopen(md5($user).".txt","r+");
+			$a=$ajax[0]('GET','/login');
+			$b=$ajax[0]('POST','/session',
+				$a['cookies'][1],
+				array("authenticity_token"=>$getInput[0]($a['body'],"authenticity_token"),
+					"login"=>$user,"password"=>$pwd)
+				);
+			fputs($f,
+				($owner=$b["cookies"][0]["dotcom_user"])
+				."\n".
+				($user_session=$b["cookies"][0]["user_session"])
+			);
+		}
+		return array($owner,'user_session='.$user_session);
+	};
+});
